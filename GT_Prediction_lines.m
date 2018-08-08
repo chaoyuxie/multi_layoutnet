@@ -1,9 +1,10 @@
 %% 把test数据集里面的原始点与经过网络的得到的点进行比较，做出线段，并画在一张图上，最后输出到文件中
 % 其中红色点代表预测得到的点，绿色点代表GT
-%% Project to perspective views
+clear all;
+add_path;
 % read image
 image_input = 'matdata\PanoContext\pctest_img';
-image_output = 'GT_prediction\test_line';
+image_output = 'GT_prediction\pt4';
 Img_Path = dir(fullfile(image_input,'*mat'));
 
 %read GT_points
@@ -11,7 +12,7 @@ points_GT = 'data_sup_\PanoContext\pctest_cor_location';
 GT_path = dir(fullfile(points_GT,'*mat'));
 
 %read Pre_points
-points_Prediction = 'prediction_points\location';
+points_Prediction = 'prediction_points\pt3';
 Pre_Path = dir(fullfile(points_Prediction,'*mat'));
 
 %read panoedeg;
@@ -32,27 +33,27 @@ for number = 1:numel(Img_Path)
     
     POINTS_Pre_Path = fullfile(points_Prediction,Pre_Path(number).name);
     location_Pre = open(POINTS_Pre_Path);
-    location_Pre = location_Pre.point_location;
-    
+    location = location_Pre.pt;
+%     location = pt;
     PanoEdgePath = fullfile(PanoEdge_line,PanoEdge_Path(number).name);
     PanoEdgeC = open(PanoEdgePath);
     PanoEdgeC = PanoEdgeC.panoEdgeC;
-    locations = zeros(8,2);
-    if size(location_Pre,2) == 8
-        for i = 1:8
-            location(i,1) = location_Pre(i).x;
-            location(i,2) = location_Pre(i).y;
-        end
+    %locations = zeros(8,2);
+    %if FILEreal_number == 3||FILEreal_number == 11||FILEreal_number == 28||FILEreal_number == 32||FILEreal_number == 34||FILEreal_number == 40
+%         for i = 1:8
+%             location(i,1) = location_Pre(i).x;
+%             location(i,2) = location_Pre(i).y;
+%         end
         pointUV = coords2uv(location,1024,512);
         points = uv2xyzN(pointUV);
-        firstID = [5 6 7 8 1 2 3 4 5 6 7 8];
-        secndID = [6 7 8 5 2 3 4 1 1 2 3 4];
+        firstID = [2 4 6 8 1 3 5 7 2 4 6 8];
+        secndID = [4 6 8 2 3 5 7 1 1 3 5 7];
         lines = lineFromTwoPoint(points(firstID,:), points(secndID,:));
         panoEdgeC = paintParameterLine(lines, 1024, 512, PanoEdgeC);
         save_path_img=fullfile(image_output,strcat('\',num2str(FILEreal_number),'_.png'));
         imshow(panoEdgeC);hold on
-        for i = 1:size(location_Pre,2)
-            scatter(location_Pre(i).x, location_Pre(i).y, 100, [1 0 0],'fill','s');
+        for i = 1:size(location,1)
+            scatter(location(i,1), location(i,2), 100, [1 0 0],'fill','s');
         end
         
         for i = 1:8
@@ -64,6 +65,6 @@ for number = 1:numel(Img_Path)
         axis off
         saveas(gcf,save_path_img);
         clf;
-    end
+    %end
     
 end

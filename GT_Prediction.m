@@ -1,6 +1,8 @@
 %% 把test数据集里面的原始点与经过网络的得到的点进行比较，并画在一张图上，最后输出到文件中
 % 其中红色点代表预测得到的点，绿色点代表GT
 clf;
+clear all;
+add_path;
 image_input = 'matdata\PanoContext\pctest_img';
 points_GT = 'data_sup_\PanoContext\pctest_cor_location';
 points_Prediction = 'myresults_output\location_new';
